@@ -1,0 +1,2 @@
+# miners.sx
+SX Miners
