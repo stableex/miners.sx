@@ -1,7 +1,7 @@
 module.exports = {
     apps: [
         {
-            name: "sx.miners",
+            name: "sx.miner",
             script: "index.ts",
             autorestart: true,
             log_date_format : "YYYY-MM-DD HH:mm"
