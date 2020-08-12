@@ -4,11 +4,11 @@ import { Action } from "eosjs/dist/eosjs-serialize";
 import { CronJob } from "cron"
 
 const action: Action = {
-    account: "miners.sx",
+    account: "miner.sx",
     name: "mine",
     authorization: [{actor: ACTOR, permission: PERMISSION}],
     data: {
-        executer: "miner.sx",
+        executer: ACTOR,
     }
 };
 

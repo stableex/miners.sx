@@ -1,4 +1,4 @@
-# SX - Miners
+# SX - Miner
 
 ## `.env` settings
 
