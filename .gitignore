@@ -2,6 +2,7 @@
 *.wasm
 stderr
 .vscode
+nodeos
 
 # Logs
 logs

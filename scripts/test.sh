@@ -1,4 +1,4 @@
 #!/bin/bash
 
 # miner
-cleos push action miner.sx '["miner.sx"]' -p miner.sx
+cleos push action miner.sx mine '["miner.sx"]' -p miner.sx
