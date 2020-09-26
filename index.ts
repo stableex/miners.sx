@@ -9,6 +9,7 @@ const action: Action = {
     authorization: [{actor: ACTOR, permission: PERMISSION}],
     data: {
         executer: ACTOR,
+        symcode: "EOS"
     }
 };
 
