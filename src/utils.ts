@@ -18,6 +18,8 @@ export async function transact(api: Api, actions: Action[]): Promise<string> {
             const {name, what, details} = e.json.error
             const message = (details[0]) ? details[0].message : `[${name}] ${what}`;
             console.error(message);
+        } else {
+            console.error(e);
         }
     }
     return trx_id;
