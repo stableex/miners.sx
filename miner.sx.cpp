@@ -12,12 +12,14 @@ void minerSx::mine( const name executor, const optional<symbol_code> symcode )
 {
     require_auth( executor );
 
+    // default
     asset quantity = asset{100'0000, symbol{"EOS", 4}};
     name contract = "eosio.token"_n;
 
+    // USDT
     if ( *symcode == symbol_code{"USDT"} ) {
-        asset quantity = asset{50'0000, symbol{"USDT", 4}};
-        name contract = "tethertether"_n;
+        quantity = asset{50'0000, symbol{"USDT", 4}};
+        contract = "tethertether"_n;
     }
 
     flash::borrow_action borrow( "flash.sx"_n, { get_self(), "active"_n });
@@ -68,21 +70,32 @@ bool minerSx::defibox_to_dfs( const asset quantity, const uint8_t pair_id, const
     return false;
 }
 
+// EOS/USN = 9 (Defibox) - swap.defi
+// EOS/USDT = 12 (Defibox) - swap.defi
 // USN/USDT = 35 (Defibox) - swap.defi
 bool minerSx::sx_to_defibox( const name contract, const asset quantity )
 {
-    const uint8_t pair_id = 35;
-    const asset sx_quantity = swapSx::get_rate("stable.sx"_n, quantity, symbol_code{"USN"} );
-    const asset defibox_quantity = defibox::getAmountOut( quantity, pair_id );
-    const asset delta = defibox_quantity - quantity;
+    const uint8_t pair_id = 12;
 
-    if ( delta.amount > 0 ) {
-        transfer( get_self(), "stable.sx"_n, "tethertether"_n, quantity, "USN" );
-        transfer( get_self(), "swap.defi"_n, "danchortoken"_n, sx_quantity, "swap,0," + to_string(pair_id) );
-        return true;
+    // SX => Defibox
+    const asset sx_quantity_1 = swapSx::get_rate("stable.sx"_n, quantity, symbol_code{"EOS"} );
+    const asset defibox_quantity_1 = defibox::getAmountOut( sx_quantity_1, pair_id );
+    const asset delta_1 = defibox_quantity_1 - quantity;
+
+    // Defibox => SX
+    const asset defibox_quantity_2 = defibox::getAmountOut( quantity, pair_id );
+    const asset sx_quantity_2 = swapSx::get_rate("stable.sx"_n, defibox_quantity_2, symbol_code{"USDT"} );
+    const asset delta_2 = sx_quantity_2 - quantity;
+
+    if ( delta_1 > delta_2 ) {
+        transfer( get_self(), "stable.sx"_n, "tethertether"_n, quantity, "EOS" );
+        transfer( get_self(), "swap.defi"_n, "eosio.token"_n, sx_quantity_1, "swap,0," + to_string(pair_id) );
+    } else {
+        transfer( get_self(), "swap.defi"_n, "tethertether"_n, quantity, "swap,0," + to_string(pair_id) );
+        transfer( get_self(), "stable.sx"_n, "eosio.token"_n, defibox_quantity_2, "USDT" );
     }
-    check( delta.amount > 0, delta.to_string() + " delta | " + sx_quantity.to_string() + " sx | " + defibox_quantity.to_string() + " defibox");
-    return false;
+    // // check( delta.amount > 0, delta.to_string() + " delta | " + sx_quantity.to_string() + " sx | " + defibox_quantity.to_string() + " defibox");
+    return true;
 }
 
 void minerSx::box_swap_arb( const name contract, const asset quantity )
@@ -118,7 +131,7 @@ void minerSx::repay( const name contract, const asset quantity )
 {
     require_auth( get_self() );
 
-    const asset balance = token::get_balance( contract, get_self(), symbol_code{"EOS"} );
+    const asset balance = token::get_balance( contract, get_self(), quantity.symbol.code() );
     const asset remaining = balance - quantity;
     check( remaining.amount >= 0, "cannot pay flashloan by " + remaining.to_string() );
     transfer( get_self(), "flash.sx"_n, contract, quantity, "repay" );

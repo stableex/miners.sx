@@ -3,7 +3,7 @@ import { timeout, transact } from "./src/utils"
 import { Action } from "eosjs/dist/eosjs-serialize";
 import { CronJob } from "cron"
 
-function action( symcode: string) {
+function action( symcode: string): Action {
     return {
         account: "miner.sx",
         name: "mine",
