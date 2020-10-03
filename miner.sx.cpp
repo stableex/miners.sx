@@ -1,10 +1,8 @@
 #include <eosio.token/eosio.token.hpp>
 #include <sx.flash/flash.sx.hpp>
 #include <sx.swap/swap.sx.hpp>
+#include <sx.defibox/defibox.hpp>
 
-#include "defibox.hpp"
-#include "dfs.hpp"
-// #include "swap.sx.hpp"
 #include "miner.sx.hpp"
 
 [[eosio::action]]
@@ -18,7 +16,7 @@ void minerSx::mine( const name executor, const optional<symbol_code> symcode )
 
     // USDT
     if ( *symcode == symbol_code{"USDT"} ) {
-        quantity = asset{50'0000, symbol{"USDT", 4}};
+        quantity = asset{10'0000, symbol{"USDT", 4}};
         contract = "tethertether"_n;
     }
 
@@ -44,6 +42,8 @@ void minerSx::on_callback( const name to, const name contract, asset quantity, c
         rewards.send( "194-12" );
     }
 
+    // check( defibox_to_dfs( contract, quantity ), "no Defibox<>DFS matches found");
+
     // repay flash loan
     repay.send( contract, quantity );
 
@@ -51,23 +51,87 @@ void minerSx::on_callback( const name to, const name contract, asset quantity, c
     profit.send( contract, quantity.symbol.code() );
 }
 
+[[eosio::action]]
+void minerSx::test( const name contract, const asset quantity, const uint64_t pair_id )
+{
+    const auto [ reserveIn, reserveOut ] = defibox::getReserves( pair_id, quantity.symbol );
+    const asset out = defibox::getAmountOut( quantity, reserveIn, reserveOut );
+    // check( false, out.to_string() );
+
+    minerSx::getamount_action getamount( get_self(), { get_self(), "active"_n });
+    getamount.send( out );
+    transfer( get_self(), "swap.defi"_n, contract, quantity, "swap,0," + to_string( pair_id ));
+}
+
+[[eosio::action]]
+void minerSx::getamount( const asset out )
+{
+    require_auth( get_self() );
+}
+
 // EOS/USN = 9 (Defibox) - swap.defi
 // EOS/USDT = 12 (Defibox) - swap.defi
 // USN/USDT = 35 (Defibox) - swap.defi
 // EOS/BOX = 194 (Defibox) - swap.defi
 // EOS/USDT = 17 (DFS) - defisswapcnt
-bool minerSx::defibox_to_dfs( const asset quantity, const uint8_t pair_id, const uint8_t mid )
+bool minerSx::defibox_to_dfs( const name contract, const asset quantity )
 {
-    const asset defibox_quantity = defibox::getAmountOut( quantity, pair_id );
-    const asset dfs_quantity = dfs::getAmountOut( defibox_quantity, mid );
-    const asset delta = dfs_quantity - quantity;
+    // registrySx::defibox_table registry_defibox( "registry.sx"_n, "registry.sx"_n.value );
+    // registrySx::dfs_table registry_dfs( "registry.sx"_n, "registry.sx"_n.value );
+    // registrySx::tokens_table registry_tokens( "registry.sx"_n, "registry.sx"_n.value );
 
-    if ( delta.amount > 0 ) {
-        transfer( get_self(), "swap.defi"_n, "eosio.token"_n, quantity, "swap,0," + to_string(pair_id) );
-        transfer( get_self(), "defisswapcnt"_n, "tethertether"_n, defibox_quantity, "swap:" + to_string(mid) );
-        return true;
-    }
+    // const symbol_code base = quantity.symbol.code();
+    // const auto itr = registry_defibox.find( base.raw() );
+
+    // // stats
+    // int64_t highest_delta = -9999;
+    // symbol_code highest_quote;
+
+    // for ( const auto row : itr->quotes ) {
+    //     const symbol_code quote = row.first;
+    //     const uint64_t pair_id = row.second;
+
+    //     // does exist in token table
+    //     const auto tokens_itr = registry_tokens.find( quote.raw() );
+    //     if ( tokens_itr == registry_tokens.end() ) continue;
+
+    //     // skip if not in dfs
+    //     const auto dfs_itr = registry_dfs.find( base.raw() );
+    //     if ( dfs_itr == registry_dfs.end() ) continue;
+    //     if ( !dfs_itr->quotes.at( quote ) ) continue;
+
+    //     // skip if DFS pair does not exist
+    //     const uint64_t mid = get_pair_id( registry_dfs, base, quote );
+
+    //     const asset defibox_quantity = defibox::getAmountOut( quantity, pair_id );
+    //     const asset dfs_quantity = dfs::getAmountOut( defibox_quantity, mid, quote );
+    //     const asset delta = dfs_quantity - quantity;
+
+    //     // update stats in case fail
+    //     if ( delta.amount > highest_delta ) {
+    //         highest_delta = delta.amount;
+    //         highest_quote = quote;
+    //     }
+
+    //     // // success
+    //     // if ( delta.amount > 0 ) {
+    //     //     transfer( get_self(), "swap.defi"_n, contract, quantity, "swap,0," + to_string(pair_id) );
+    //     //     transfer( get_self(), "defisswapcnt"_n, tokens_itr->contract, defibox_quantity, "swap:" + to_string(mid) );
+    //     //     return true;
+    //     // }
+    // }
+    // check( false, base.to_string() + " => " + highest_quote.to_string() + " by " + to_string( highest_delta ));
     return false;
+}
+
+template <typename T>
+uint64_t minerSx::get_pair_id( T& table, const symbol_code base, const symbol_code quote )
+{
+    const auto itr = table.find( base.raw() );
+    if ( itr != table.end() ) {
+        return itr->quotes.at( quote );
+    }
+    return 0;
 }
 
 // EOS/USN = 9 (Defibox) - swap.defi
@@ -75,25 +139,25 @@ bool minerSx::defibox_to_dfs( const asset quantity, const uint8_t pair_id, const
 // USN/USDT = 35 (Defibox) - swap.defi
 bool minerSx::sx_to_defibox( const name contract, const asset quantity )
 {
-    const uint8_t pair_id = 12;
+    // const uint8_t pair_id = 35;
 
-    // SX => Defibox
-    const asset sx_quantity_1 = swapSx::get_rate("stable.sx"_n, quantity, symbol_code{"EOS"} );
-    const asset defibox_quantity_1 = defibox::getAmountOut( sx_quantity_1, pair_id );
-    const asset delta_1 = defibox_quantity_1 - quantity;
+    // // SX => Defibox
+    // const asset sx_quantity_1 = swapSx::get_rate("stable.sx"_n, quantity, symbol_code{"USN"} );
+    // const asset defibox_quantity_1 = defibox::getAmountOut( sx_quantity_1, pair_id );
+    // const asset delta_1 = defibox_quantity_1 - quantity;
 
-    // Defibox => SX
-    const asset defibox_quantity_2 = defibox::getAmountOut( quantity, pair_id );
-    const asset sx_quantity_2 = swapSx::get_rate("stable.sx"_n, defibox_quantity_2, symbol_code{"USDT"} );
-    const asset delta_2 = sx_quantity_2 - quantity;
+    // // Defibox => SX
+    // const asset defibox_quantity_2 = defibox::getAmountOut( quantity, pair_id );
+    // const asset sx_quantity_2 = swapSx::get_rate("stable.sx"_n, defibox_quantity_2, symbol_code{"USDT"} );
+    // const asset delta_2 = sx_quantity_2 - quantity;
 
-    if ( delta_1 > delta_2 ) {
-        transfer( get_self(), "stable.sx"_n, "tethertether"_n, quantity, "EOS" );
-        transfer( get_self(), "swap.defi"_n, "eosio.token"_n, sx_quantity_1, "swap,0," + to_string(pair_id) );
-    } else {
-        transfer( get_self(), "swap.defi"_n, "tethertether"_n, quantity, "swap,0," + to_string(pair_id) );
-        transfer( get_self(), "stable.sx"_n, "eosio.token"_n, defibox_quantity_2, "USDT" );
-    }
+    // if ( delta_1 > delta_2 ) {
+    //     transfer( get_self(), "stable.sx"_n, "tethertether"_n, quantity, "USN" );
+    //     transfer( get_self(), "swap.defi"_n, "danchortoken"_n, sx_quantity_1, "swap,0," + to_string(pair_id) );
+    // } else {
+    //     transfer( get_self(), "swap.defi"_n, "tethertether"_n, quantity, "swap,0," + to_string(pair_id) );
+    //     transfer( get_self(), "stable.sx"_n, "danchortoken"_n, defibox_quantity_2, "USDT" );
+    // }
     // // check( delta.amount > 0, delta.to_string() + " delta | " + sx_quantity.to_string() + " sx | " + defibox_quantity.to_string() + " defibox");
     return true;
 }
