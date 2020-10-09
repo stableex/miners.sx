@@ -3,14 +3,14 @@ import { timeout, transact } from "./src/utils"
 import { Action } from "eosjs/dist/eosjs-serialize";
 import { CronJob } from "cron"
 
-function action( symcode: string): Action {
+function action( eos_tokens: string): Action {
     return {
-        account: "miner.sx",
+        account: "basic.sx",
         name: "mine",
         authorization: [{actor: ACTOR, permission: PERMISSION}],
         data: {
             executor: ACTOR,
-            symcode
+            eos_tokens
         }
     };
 };
@@ -19,8 +19,8 @@ new CronJob("* * * * * *", async () => {
     let count = 10;
     while ( count > 0 ) {
         count -= 1;
-        transact(api, [ action("EOS") ]);
-        transact(api, [ action("USDT") ]);
-        await timeout(50);
+        transact(api, [ action("5.0000 EOS") ]);
+        transact(api, [ action("100.0000 EOS") ]);
+        await timeout(25);
     }
 }, null, true).fireOnTick();
