@@ -10,3 +10,5 @@ export const api = new Api({ rpc, signatureProvider, textDecoder: new TextDecode
 // miner configurations
 export const ACTOR = process.env.ACTOR;
 export const PERMISSION = process.env.PERMISSION || "active";
+
+export const QUANTITY = (process.env.QUANTITY || "5.0000 EOS").split(",");
