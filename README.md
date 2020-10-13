@@ -7,7 +7,7 @@ NODEOS_ENDPOINT="http://localhost:8888"
 PRIVATE_KEYS="<PRIVATE KEY>"
 ACTOR="<ACTOR>"
 PERMISSION="active"
-QUANTITY="10.0000 EOS,50.0000 EOS"
+QUANTITY="5.0000 EOS@eosio.token,5.0000 USDT@tethertether"
 ```
 
 ## Install

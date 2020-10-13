@@ -11,4 +11,4 @@ export const api = new Api({ rpc, signatureProvider, textDecoder: new TextDecode
 export const ACTOR = process.env.ACTOR;
 export const PERMISSION = process.env.PERMISSION || "active";
 
-export const QUANTITY = (process.env.QUANTITY || "5.0000 EOS").split(",");
+export const EXT_QUANTITY = (process.env.EXT_QUANTITY || "5.0000 EOS@eosio.token").split(",").map(row => row.split("@"));
