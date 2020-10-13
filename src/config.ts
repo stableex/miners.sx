@@ -8,7 +8,11 @@ export const rpc = new JsonRpc(process.env.NODEOS_ENDPOINT, { fetch: require('no
 export const api = new Api({ rpc, signatureProvider, textDecoder: new TextDecoder(), textEncoder: new TextEncoder() });
 
 // miner configurations
-export const ACTOR = process.env.ACTOR;
-export const PERMISSION = process.env.PERMISSION || "active";
+if (!process.env.ACTOR) throw new Error("process.env.ACTOR is required");
+if (!process.env.EXT_QUANTITY) throw new Error("process.env.EXT_QUANTITY is required");
+if (!process.env.CONTRACT) throw new Error("process.env.CONTRACT is required");
 
-export const EXT_QUANTITY = (process.env.EXT_QUANTITY || "5.0000 EOS@eosio.token").split(",").map(row => row.split("@"));
+export const ACTOR = process.env.ACTOR;
+export const CONTRACT = process.env.CONTRACT;
+export const PERMISSION = process.env.PERMISSION || "active";
+export const EXT_QUANTITY = process.env.EXT_QUANTITY.split(",").map(row => row.split("@"));

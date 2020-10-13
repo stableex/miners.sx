@@ -1,11 +1,11 @@
-import { api, ACTOR, PERMISSION, EXT_QUANTITY } from "./src/config"
+import { api, CONTRACT, ACTOR, PERMISSION, EXT_QUANTITY } from "./src/config"
 import { timeout, transact } from "./src/utils"
 import { Action } from "eosjs/dist/eosjs-serialize";
 import { CronJob } from "cron"
 
 function action( quantity: string, contract: string ): Action {
     return {
-        account: "basic.sx",
+        account: CONTRACT,
         name: "mine",
         authorization: [{actor: ACTOR, permission: PERMISSION}],
         data: {
