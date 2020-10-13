@@ -17,7 +17,10 @@ export async function transact(api: Api, actions: Action[]): Promise<string> {
         if (e instanceof RpcError) {
             const {name, what, details} = e.json.error
             const message = (details[0]) ? details[0].message : `[${name}] ${what}`;
-            console.error(message);
+
+            for (const action of actions) {
+                console.error(`ERROR ${action.account}::${action.name} [${JSON.stringify(action.data)}] => ${message}`);
+            }
         } else {
             console.error(e);
         }
