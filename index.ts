@@ -1,4 +1,4 @@
-import { api, CONTRACT, ACTOR, PERMISSION, EXT_QUANTITY } from "./src/config"
+import { api, ACTOR, PERMISSION, QUANTITY } from "./src/config"
 import { timeout, transact } from "./src/utils"
 import { Action } from "eosjs/dist/eosjs-serialize";
 import { CronJob } from "cron"
@@ -18,13 +18,27 @@ function basic( quantity: string, contract: string ): Action {
     };
 };
 
+function miner( ): Action {
+    return {
+        account: "miner.sx",
+        name: "mine",
+        authorization: [{actor: ACTOR, permission: PERMISSION}],
+        data: {
+            executor: ACTOR
+        }
+    };
+};
+
 new CronJob("* * * * * *", async () => {
     let count = 10;
     while ( count > 0 ) {
         count -= 1;
-        for ( const [quantity, contract] of EXT_QUANTITY ) {
+        for ( const [quantity, contract] of QUANTITY ) {
+            // basic.sx
             transact(api, [ basic(quantity, contract) ]);
         }
+        // miner.sx
+        transact(api, [ miner() ]);
         await timeout(25);
     }
 }, null, true).fireOnTick();
