@@ -9,10 +9,9 @@ export const api = new Api({ rpc, signatureProvider, textDecoder: new TextDecode
 
 // miner configurations
 if (!process.env.ACTOR) throw new Error("process.env.ACTOR is required");
-if (!process.env.EXT_QUANTITY) throw new Error("process.env.EXT_QUANTITY is required");
-if (!process.env.CONTRACT) throw new Error("process.env.CONTRACT is required");
+if (!process.env.QUANTITY) throw new Error("process.env.QUANTITY is required");
+if (!process.env.QUANTITY.includes("@")) throw new Error("process.env.QUANTITY schema is invalid (ex: \"1.0000 EOS@eosio.token\")");
 
 export const ACTOR = process.env.ACTOR;
-export const CONTRACT = process.env.CONTRACT;
 export const PERMISSION = process.env.PERMISSION || "active";
-export const EXT_QUANTITY = process.env.EXT_QUANTITY.split(",").map(row => row.split("@"));
+export const QUANTITY = process.env.QUANTITY.split(",").map(row => row.split("@"));

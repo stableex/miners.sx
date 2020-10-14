@@ -3,9 +3,9 @@ import { timeout, transact } from "./src/utils"
 import { Action } from "eosjs/dist/eosjs-serialize";
 import { CronJob } from "cron"
 
-function action( quantity: string, contract: string ): Action {
+function basic( quantity: string, contract: string ): Action {
     return {
-        account: CONTRACT,
+        account: "basic.sx",
         name: "mine",
         authorization: [{actor: ACTOR, permission: PERMISSION}],
         data: {
@@ -23,7 +23,7 @@ new CronJob("* * * * * *", async () => {
     while ( count > 0 ) {
         count -= 1;
         for ( const [quantity, contract] of EXT_QUANTITY ) {
-            transact(api, [ action(quantity, contract) ]);
+            transact(api, [ basic(quantity, contract) ]);
         }
         await timeout(25);
     }

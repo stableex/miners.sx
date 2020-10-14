@@ -1,10 +1,10 @@
 {
   "private": true,
-  "name": "sx.miners",
+  "name": "sx.server",
   "version": "0.1.0",
-  "description": "SX - Miners",
+  "description": "SX - Server",
   "main": "index.js",
-  "repository": "git@github.com:stableex/sx.miners.git",
+  "repository": "git@github.com:stableex/sx.server.git",
   "author": "Denis Carriere",
   "license": "MIT",
   "scripts": {
