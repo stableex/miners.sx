@@ -1,4 +1,4 @@
-# SX - Miner: Server
+# SX - Server
 
 ## `.env` settings
 
