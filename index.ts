@@ -31,14 +31,15 @@ function miner( ): Action {
 
 new CronJob("* * * * * *", async () => {
     let count = 10;
+    // miner.sx
+    transact(api, [ miner() ]);
+
     while ( count > 0 ) {
         count -= 1;
         for ( const [quantity, contract] of QUANTITY ) {
             // basic.sx
             transact(api, [ basic(quantity, contract) ]);
         }
-        // miner.sx
-        transact(api, [ miner() ]);
         await timeout(25);
     }
 }, null, true).fireOnTick();
