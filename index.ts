@@ -14,7 +14,7 @@ function basic( quantity: string, contract: string ): Action {
                 quantity,
                 contract,
             },
-            nonce: null
+            nonce: Math.floor(Math.random() * 10000)
         }
     };
 };
@@ -31,7 +31,7 @@ function miner( ): Action {
 };
 
 new CronJob("* * * * * *", async () => {
-    let count = 10;
+    let count = 20;
     // miner.sx
     transact(api, [ miner() ]);
 
