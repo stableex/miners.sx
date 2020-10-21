@@ -13,7 +13,8 @@ function basic( quantity: string, contract: string ): Action {
             ext_quantity: {
                 quantity,
                 contract,
-            }
+            },
+            nonce: null
         }
     };
 };
