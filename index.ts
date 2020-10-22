@@ -51,12 +51,12 @@ new CronJob("* * * * * *", async () => {
 
     while ( count > 0 ) {
         count -= 1;
+        // gravy
+        transact(api, [ gravy() ]);
+
         for ( const [quantity, contract] of QUANTITY ) {
             // basic.sx
             transact(api, [ basic(quantity, contract) ]);
-
-            // gravy
-            transact(api, [ gravy() ]);
         }
         await timeout(25);
     }
