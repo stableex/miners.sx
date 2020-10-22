@@ -19,6 +19,20 @@ function basic( quantity: string, contract: string ): Action {
     };
 };
 
+
+function gravy( ): Action {
+    return {
+        account: "gravyhftdefi",
+        name: "mine",
+        authorization: [{actor: ACTOR, permission: PERMISSION}],
+        data: {
+            miner: ACTOR,
+            symbol: "8,GRV",
+            rando: Math.floor(Math.random() * 10000)
+        }
+    };
+};
+
 function miner( ): Action {
     return {
         account: "miner.sx",
@@ -40,6 +54,9 @@ new CronJob("* * * * * *", async () => {
         for ( const [quantity, contract] of QUANTITY ) {
             // basic.sx
             transact(api, [ basic(quantity, contract) ]);
+
+            // gravy
+            transact(api, [ gravy() ]);
         }
         await timeout(25);
     }
