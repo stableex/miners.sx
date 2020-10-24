@@ -15,3 +15,5 @@ if (!process.env.QUANTITY.includes("@")) throw new Error("process.env.QUANTITY s
 export const ACTOR = process.env.ACTOR;
 export const PERMISSION = process.env.PERMISSION || "active";
 export const QUANTITY = process.env.QUANTITY.split(",").map(row => row.split("@"));
+export const CONCURRENCY = Number(process.env.CONCURRENCY || 20);
+export const TIMEOUT_MS = Number(process.env.TIMEOUT_MS || 50);

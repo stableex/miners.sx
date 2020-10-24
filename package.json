@@ -11,15 +11,14 @@
     "start": "ts-node index.ts"
   },
   "devDependencies": {
-    "@types/cron": "*",
     "@types/node": "*",
     "ts-node": "*",
     "typescript": "*"
   },
   "dependencies": {
-    "cron": "*",
     "dotenv": "*",
     "eosjs": "21.x",
-    "node-fetch": "*"
+    "node-fetch": "*",
+    "p-queue": "^6.6.2"
   }
 }

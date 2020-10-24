@@ -1,7 +1,7 @@
-import { api, ACTOR, PERMISSION, QUANTITY } from "./src/config"
+import { api, TIMEOUT_MS, ACTOR, PERMISSION, QUANTITY, CONCURRENCY } from "./src/config"
 import { timeout, transact } from "./src/utils"
 import { Action } from "eosjs/dist/eosjs-serialize";
-import { CronJob } from "cron"
+import PQueue from 'p-queue';
 
 function basic( quantity: string, contract: string ): Action {
     return {
@@ -19,20 +19,6 @@ function basic( quantity: string, contract: string ): Action {
     };
 };
 
-
-function gravy( ): Action {
-    return {
-        account: "gravyhftdefi",
-        name: "mine",
-        authorization: [{actor: ACTOR, permission: PERMISSION}],
-        data: {
-            miner: ACTOR,
-            symbol: "8,GRV",
-            rando: Math.floor(Math.random() * 10000)
-        }
-    };
-};
-
 function miner( ): Action {
     return {
         account: "miner.sx",
@@ -44,20 +30,25 @@ function miner( ): Action {
     };
 };
 
-new CronJob("* * * * * *", async () => {
-    let count = 20;
+async function task(action: Action, queue: PQueue<any, any> ) {
+    await transact(api, [ action ]);
+    await timeout(TIMEOUT_MS);
+    queue.add(() => task(action, queue));
+}
+
+(async () => {
+    const queue = new PQueue({concurrency: CONCURRENCY});
+
     // miner.sx
-    transact(api, [ miner() ]);
+    queue.add(() => task(miner(), queue));
 
-    while ( count > 0 ) {
-        count -= 1;
-        // gravy
-        transact(api, [ gravy() ]);
-
+    for ( let i = 0; i <= CONCURRENCY; i++ ) {
         for ( const [quantity, contract] of QUANTITY ) {
+
             // basic.sx
-            transact(api, [ basic(quantity, contract) ]);
+            queue.add(() => task(basic(quantity, contract), queue));
+            await timeout(TIMEOUT_MS);
         }
-        await timeout(25);
     }
-}, null, true).fireOnTick();
+    await queue.onIdle();
+})();
