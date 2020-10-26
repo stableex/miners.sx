@@ -3,13 +3,17 @@
 ## `.env` settings
 
 ```bash
-NODEOS_ENDPOINT="http://localhost:8888"
+# REQUIRED
 PRIVATE_KEYS="<PRIVATE KEY>"
-ACTOR="<ACTOR>"
+ACTOR="<ACCOUNT>"
+
+# OPTIONAL
+NODEOS_ENDPOINT="http://localhost:8888"
 PERMISSION="active"
-QUANTITY="5.0000 EOS@eosio.token,5.0000 USDT@tethertether"
-CONCURRENCY=20
-TIMEOUT_MS=50
+CONCURRENCY=5
+TIMEOUT_MS=20
+ACCOUNT="basic.sx"
+ACTION="mine"
 ```
 
 ## Install

@@ -1,54 +1,31 @@
-import { api, TIMEOUT_MS, ACTOR, PERMISSION, QUANTITY, CONCURRENCY } from "./src/config"
+import { api, TIMEOUT_MS, ACTOR, PERMISSION, ACCOUNT, CONCURRENCY, ACTION } from "./src/config"
 import { timeout, transact } from "./src/utils"
 import { Action } from "eosjs/dist/eosjs-serialize";
 import PQueue from 'p-queue';
 
-function basic( quantity: string, contract: string ): Action {
+function mine( ): Action {
     return {
-        account: "basic.sx",
-        name: "mine",
+        account: ACCOUNT,
+        name: ACTION,
         authorization: [{actor: ACTOR, permission: PERMISSION}],
         data: {
             executor: ACTOR,
-            ext_quantity: {
-                quantity,
-                contract,
-            },
             nonce: Math.floor(Math.random() * 10000)
         }
     };
 };
 
-function miner( ): Action {
-    return {
-        account: "miner.sx",
-        name: "mine",
-        authorization: [{actor: ACTOR, permission: PERMISSION}],
-        data: {
-            executor: ACTOR
-        }
-    };
-};
-
-async function task(action: Action, queue: PQueue<any, any> ) {
-    await transact(api, [ action ]);
+async function task(queue: PQueue<any, any> ) {
+    await transact(api, [ mine() ]);
     await timeout(TIMEOUT_MS);
-    queue.add(() => task(action, queue));
+    queue.add(() => task(queue));
 }
 
 (async () => {
     const queue = new PQueue({concurrency: CONCURRENCY});
-
-    // // miner.sx
-    // queue.add(() => task(miner(), queue));
-
     for ( let i = 0; i <= CONCURRENCY; i++ ) {
-        for ( const [quantity, contract] of QUANTITY ) {
-
-            // basic.sx
-            queue.add(() => task(basic(quantity, contract), queue));
-            await timeout(TIMEOUT_MS);
-        }
+        queue.add(() => task(queue));
+        await timeout(TIMEOUT_MS);
     }
     await queue.onIdle();
 })();
