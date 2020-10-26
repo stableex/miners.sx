@@ -39,8 +39,8 @@ async function task(action: Action, queue: PQueue<any, any> ) {
 (async () => {
     const queue = new PQueue({concurrency: CONCURRENCY});
 
-    // miner.sx
-    queue.add(() => task(miner(), queue));
+    // // miner.sx
+    // queue.add(() => task(miner(), queue));
 
     for ( let i = 0; i <= CONCURRENCY; i++ ) {
         for ( const [quantity, contract] of QUANTITY ) {
