@@ -15,7 +15,7 @@ export const CONCURRENCY = Number(process.env.CONCURRENCY || 5);
 export const TIMEOUT_MS = Number(process.env.TIMEOUT_MS || 20);
 export const ACCOUNT = process.env.ACCOUNT || "basic.sx";
 export const ACTION = process.env.ACTION || "mine";
-
+export const TYPE = process.env.TYPE || "sx";
 
 // EOSIO RPC & API
 const signatureProvider = new JsSignatureProvider(process.env.PRIVATE_KEYS.split(","));

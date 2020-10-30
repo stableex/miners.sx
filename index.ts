@@ -1,9 +1,9 @@
-import { api, TIMEOUT_MS, ACTOR, PERMISSION, ACCOUNT, CONCURRENCY, ACTION } from "./src/config"
+import { api, TIMEOUT_MS, ACTOR, PERMISSION, CONCURRENCY, ACCOUNT, ACTION, TYPE } from "./src/config"
 import { timeout, transact } from "./src/utils"
 import { Action } from "eosjs/dist/eosjs-serialize";
 import PQueue from 'p-queue';
 
-function mine( ): Action {
+function sx( ): Action {
     return {
         account: ACCOUNT,
         name: ACTION,
@@ -15,8 +15,36 @@ function mine( ): Action {
     };
 };
 
+function gravy( ): Action {
+    return {
+        account: "gravyhftdefi",
+        name: "mine",
+        authorization: [{actor: ACTOR, permission: PERMISSION}],
+        data: {
+            miner: ACTOR,
+            symbol: "8,GRV",
+            rando: Math.floor(Math.random() * 10000)
+        }
+    };
+};
+
+function sapex( ): Action {
+    return {
+        account: "sapexfund.eo",
+        name: "move",
+        authorization: [{actor: ACTOR, permission: PERMISSION}],
+        data: {}
+    };
+};
+
+const actions = {
+    sx,
+    gravy,
+    sapex,
+}
+
 async function task(queue: PQueue<any, any> ) {
-    await transact(api, [ mine() ]);
+    await transact(api, [ actions[TYPE]() ]);
     await timeout(TIMEOUT_MS);
     queue.add(() => task(queue));
 }
