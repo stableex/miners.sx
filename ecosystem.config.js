@@ -21,5 +21,17 @@ module.exports = {
                 TYPE: "gravy"
             }
         },
+        {
+            name: "sx.server::sapex",
+            script: "index.ts",
+            autorestart: true,
+            log_date_format : "YYYY-MM-DD HH:mm",
+            env: {
+                ACTOR: "miner.sx",
+                TYPE: "sapex",
+                CONCURRENCY=1,
+                TIMEOUT_MS=61000
+            }
+        },
     ]
 };
