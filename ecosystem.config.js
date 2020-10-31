@@ -6,7 +6,7 @@ module.exports = {
             autorestart: true,
             log_date_format : "YYYY-MM-DD HH:mm",
             env: {
-                ACTOR="miner.sx",
+                ACTOR: "miner.sx",
                 TYPE: "sx"
             }
         },
@@ -16,8 +16,8 @@ module.exports = {
             autorestart: true,
             log_date_format : "YYYY-MM-DD HH:mm",
             env: {
-                ACTOR="gravy.sx",
-                CPU_ACTOR="miner.sx",
+                ACTOR: "gravy.sx",
+                CPU_ACTOR: "miner.sx",
                 TYPE: "gravy"
             }
         },
