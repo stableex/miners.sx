@@ -29,8 +29,8 @@ module.exports = {
             env: {
                 ACTOR: "miner.sx",
                 TYPE: "sapex",
-                CONCURRENCY=1,
-                TIMEOUT_MS=61000
+                CONCURRENCY: 1,
+                TIMEOUT_MS: 61000
             }
         },
     ]
