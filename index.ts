@@ -1,4 +1,4 @@
-import { api, TIMEOUT_MS, ACTOR, PERMISSION, CONCURRENCY, ACCOUNT, ACTION, TYPE } from "./src/config"
+import { api, TIMEOUT_MS, ACTOR, PERMISSION, ACCOUNT, CONCURRENCY, ACTION, TYPE, AUTHORIZATION } from "./src/config"
 import { timeout, transact } from "./src/utils"
 import { Action } from "eosjs/dist/eosjs-serialize";
 import PQueue from 'p-queue';
@@ -7,7 +7,7 @@ function sx( ): Action {
     return {
         account: ACCOUNT,
         name: ACTION,
-        authorization: [{actor: ACTOR, permission: PERMISSION}],
+        authorization: AUTHORIZATION,
         data: {
             executor: ACTOR,
             nonce: Math.floor(Math.random() * 10000)
@@ -19,7 +19,7 @@ function gravy( ): Action {
     return {
         account: "gravyhftdefi",
         name: "mine",
-        authorization: [{actor: ACTOR, permission: PERMISSION}],
+        authorization: AUTHORIZATION,
         data: {
             miner: ACTOR,
             symbol: "8,GRV",
@@ -32,7 +32,7 @@ function sapex( ): Action {
     return {
         account: "sapexfund.eo",
         name: "move",
-        authorization: [{actor: ACTOR, permission: PERMISSION}],
+        authorization: AUTHORIZATION,
         data: {}
     };
 };

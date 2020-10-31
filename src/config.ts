@@ -11,11 +11,14 @@ export const ACTOR = process.env.ACTOR;
 // OPTIONAL configurations
 export const NODEOS_ENDPOINT = process.env.NODEOS_ENDPOINT || "http://localhost:8888"
 export const PERMISSION = process.env.PERMISSION || "active";
+export const CPU_PERMISSION = process.env.CPU_PERMISSION || PERMISSION;
+export const CPU_ACTOR = process.env.CPU_ACTOR || ACTOR;
 export const CONCURRENCY = Number(process.env.CONCURRENCY || 5);
 export const TIMEOUT_MS = Number(process.env.TIMEOUT_MS || 20);
 export const ACCOUNT = process.env.ACCOUNT || "basic.sx";
 export const ACTION = process.env.ACTION || "mine";
 export const TYPE = process.env.TYPE || "sx";
+export const AUTHORIZATION = ACTOR == CPU_ACTOR ? [{actor: ACTOR, permission: PERMISSION}] : [{actor: CPU_ACTOR, permission: CPU_PERMISSION}, {actor: ACTOR, permission: PERMISSION}];
 
 // EOSIO RPC & API
 const signatureProvider = new JsSignatureProvider(process.env.PRIVATE_KEYS.split(","));
