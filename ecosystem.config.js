@@ -7,7 +7,7 @@ module.exports = {
             log_date_format : "YYYY-MM-DD HH:mm",
             env: {
                 ACTOR: "miner.sx",
-                CPU_ACTOR: "miner.sx",
+                CPU_ACTOR: "cpu.sx",
                 TYPE: "sx"
             }
         },
@@ -18,7 +18,7 @@ module.exports = {
             log_date_format : "YYYY-MM-DD HH:mm",
             env: {
                 ACTOR: "gravy.sx",
-                CPU_ACTOR: "cpu.sx",
+                CPU_ACTOR: "miner.sx",
                 TYPE: "gravy"
             }
         },
@@ -29,7 +29,7 @@ module.exports = {
             log_date_format : "YYYY-MM-DD HH:mm",
             env: {
                 ACTOR: "miner.sx",
-                CPU_ACTOR: "miner.sx",
+                CPU_ACTOR: "cpu.sx",
                 TYPE: "sapex",
                 CONCURRENCY: 1,
                 TIMEOUT_MS: 60000
