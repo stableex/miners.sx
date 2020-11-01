@@ -12,12 +12,12 @@ export async function transact(api: Api, actions: Action[]): Promise<string> {
     const start = new Date().getTime();
     let trx_id: string;
 
-    // calculate aggregated transaction count per minute
+    // calculate aggregated transaction count per block
     count ++;
-    const count_m = Math.floor(count / ((start - init) / 1000 ) * 60);
+    const count_b = Math.floor(count / ((start - init) / 500 ));
 
-    // reset init timer if exceeds 1 hour
-    if ( start - init > 3600000 ) {
+    // reset init timer if exceeds 5 minutes
+    if ( start - init > 300000 ) {
         init = new Date().getTime();
         count = 0;
     }
@@ -29,7 +29,7 @@ export async function transact(api: Api, actions: Action[]): Promise<string> {
         const ms = (end - start) + "ms";
 
         for (const action of actions) {
-            console.log(`${ms} [${count_m}/m] ${action.account}::${action.name} [${JSON.stringify(action.data)}] => ${trx_id}`);
+            console.log(`${ms} [${count_b}/b] ${action.account}::${action.name} [${JSON.stringify(action.data)}] => ${trx_id}`);
         }
     } catch (e) {
         if (e instanceof RpcError) {
@@ -39,7 +39,7 @@ export async function transact(api: Api, actions: Action[]): Promise<string> {
             const ms = (end - start) + "ms";
 
             for (const action of actions) {
-                console.error(`${ms} [${count_m}/m] ERROR ${action.account}::${action.name} [${JSON.stringify(action.data)}] => ${message}`);
+                console.error(`${ms} [${count_b}/b] ERROR ${action.account}::${action.name} [${JSON.stringify(action.data)}] => ${message}`);
             }
         } else {
             console.error(e);
