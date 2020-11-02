@@ -1,7 +1,7 @@
 module.exports = {
     apps: [
         {
-            name: "sx.server::sx",
+            name: "sx.server::sx-1",
             script: "index.ts",
             autorestart: true,
             log_date_format : "YYYY-MM-DD HH:mm",
@@ -14,7 +14,7 @@ module.exports = {
             }
         },
         {
-            name: "sx.server::gravy",
+            name: "sx.server::sx-2",
             script: "index.ts",
             autorestart: true,
             log_date_format : "YYYY-MM-DD HH:mm",
