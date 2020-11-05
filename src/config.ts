@@ -14,7 +14,7 @@ export const PERMISSION = process.env.PERMISSION || "active";
 export const CPU_PERMISSION = process.env.CPU_PERMISSION || PERMISSION;
 export const CPU_ACTOR = process.env.CPU_ACTOR || ACTOR;
 export const CONCURRENCY = Number(process.env.CONCURRENCY || 5);
-export const TIMEOUT_MS = Number(process.env.TIMEOUT_MS || 20);
+export const TIMEOUT_MS = Number(process.env.TIMEOUT_MS || 0);
 export const ACCOUNT = process.env.ACCOUNT || "push.sx";
 export const AUTHORIZATION = ACTOR == CPU_ACTOR ? [{actor: ACTOR, permission: PERMISSION}] : [{actor: CPU_ACTOR, permission: CPU_PERMISSION}, {actor: ACTOR, permission: PERMISSION}];
 
