@@ -9,11 +9,8 @@ ACTOR="<ACCOUNT>"
 
 # OPTIONAL
 NODEOS_ENDPOINT="http://localhost:8888"
-PERMISSION="active"
-CONCURRENCY=5
-TIMEOUT_MS=20
-ACCOUNT="basic.sx"
-ACTION="mine"
+CONCURRENCY=3
+TIMEOUT_MS=5
 ```
 
 ## Install
