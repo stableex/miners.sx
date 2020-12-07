@@ -10,7 +10,7 @@ if (!process.env.PRIVATE_KEYS) throw new Error("process.env.PRIVATE_KEYS is requ
 export const ACTOR = process.env.ACTOR;
 
 // OPTIONAL configurations
-export const NODEOS_ENDPOINTS = (process.env.NODEOS_ENDPOINT || process.env.NODEOS_ENDPOINTS || "http://localhost:8888").split(",")
+export const NODEOS_ENDPOINT = process.env.NODEOS_ENDPOINT || "http://localhost:8888"
 export const PERMISSION = process.env.PERMISSION || "active";
 export const CPU_PERMISSION = process.env.CPU_PERMISSION || PERMISSION;
 export const CPU_ACTOR = process.env.CPU_ACTOR || ACTOR;
@@ -21,9 +21,5 @@ export const AUTHORIZATION = ACTOR == CPU_ACTOR ? [{actor: ACTOR, permission: PE
 
 // EOSIO RPC & API
 const signatureProvider = new JsSignatureProvider(process.env.PRIVATE_KEYS.split(","));
-
-export function get_api() {
-    const endpoint = NODEOS_ENDPOINTS[ Math.floor(Math.random() * NODEOS_ENDPOINTS.length) ];
-    const rpc = new JsonRpc(endpoint, { fetch });
-    return new Api({ rpc, signatureProvider, textDecoder: new TextDecoder(), textEncoder: new TextEncoder() });
-}
+export const rpc = new JsonRpc(NODEOS_ENDPOINT, { fetch });
+export const api = new Api({ rpc, signatureProvider, textDecoder: new TextDecoder(), textEncoder: new TextEncoder() });
