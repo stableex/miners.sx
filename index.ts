@@ -1,4 +1,4 @@
-import { api, TIMEOUT_MS, ACTOR, ACCOUNT, CONCURRENCY, AUTHORIZATION } from "./src/config"
+import { get_api, TIMEOUT_MS, ACTOR, ACCOUNT, CONCURRENCY, AUTHORIZATION } from "./src/config"
 import { timeout, transact } from "./src/utils"
 import { Action } from "eosjs/dist/eosjs-serialize";
 import PQueue from 'p-queue';
@@ -16,6 +16,7 @@ function mine( ): Action {
 };
 
 async function task(queue: PQueue<any, any> ) {
+    const api = get_api();
     await transact(api, [ mine() ]);
     await timeout(TIMEOUT_MS);
     queue.add(() => task(queue));
