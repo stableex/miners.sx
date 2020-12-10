@@ -14,8 +14,8 @@ export const NODEOS_ENDPOINT = process.env.NODEOS_ENDPOINT || "http://localhost:
 export const PERMISSION = process.env.PERMISSION || "active";
 export const CPU_PERMISSION = process.env.CPU_PERMISSION || PERMISSION;
 export const CPU_ACTOR = process.env.CPU_ACTOR || ACTOR;
-export const CONCURRENCY = Number(process.env.CONCURRENCY || 3);
-export const TIMEOUT_MS = Number(process.env.TIMEOUT_MS || 5);
+export const CONCURRENCY = Number(process.env.CONCURRENCY || 8);
+export const TIMEOUT_MS = Number(process.env.TIMEOUT_MS || 1);
 export const ACCOUNT = process.env.ACCOUNT || "push.sx";
 export const AUTHORIZATION = ACTOR == CPU_ACTOR ? [{actor: ACTOR, permission: PERMISSION}] : [{actor: CPU_ACTOR, permission: CPU_PERMISSION}, {actor: ACTOR, permission: PERMISSION}];
 
