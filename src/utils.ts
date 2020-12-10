@@ -29,7 +29,7 @@ export async function transact(api: Api, actions: Action[]): Promise<string> {
         const ms = (end - start) + "ms";
 
         for (const action of actions) {
-            console.log(`${ms} [${count_b}/b] ${action.account}::${action.name} [${JSON.stringify(action.data)}] => ${trx_id}`);
+            console.log(`${ms} [${count_b}tx/b] ${action.account}::${action.name} [${JSON.stringify(action.data)}] => ${trx_id}`);
         }
     } catch (e) {
         if (e instanceof RpcError) {
@@ -39,7 +39,7 @@ export async function transact(api: Api, actions: Action[]): Promise<string> {
             const ms = (end - start) + "ms";
 
             for (const action of actions) {
-                console.error(`${ms} [${count_b}/b] ERROR ${action.account}::${action.name} [${JSON.stringify(action.data)}] => ${message}`);
+                console.error(`${ms} [${count_b}tx/b] ERROR ${action.account}::${action.name} [${JSON.stringify(action.data)}] => ${message}`);
             }
         } else {
             console.error(e);
