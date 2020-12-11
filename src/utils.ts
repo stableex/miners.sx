@@ -38,15 +38,6 @@ export async function transact(api: Api, actions: Action[]): Promise<string> {
                 actions: actions
             });
 
-        // regenerate TAPOS params every 20 seconds
-        if( start - refBlockTime > 20*1000) {
-            refBlockTime = start;
-            const info = await api.rpc.get_info();
-            refBlockInfo = await api.rpc.get_block(info.head_block_num - 3);
-            const timeInISOString = (new Date(start + 40*1000)).toISOString();      //expiration in 40 seconds
-            trxExpiration = timeInISOString.substr(0, timeInISOString.length - 1);
-        }
-
         trx_id = result.transaction_id;
         const end = new Date().getTime();
         const ms = (end - start) + "ms";
@@ -68,6 +59,16 @@ export async function transact(api: Api, actions: Action[]): Promise<string> {
             console.error(e);
         }
     }
+
+    // refresh TAPOS params every 20 seconds
+    if( start - refBlockTime > 20*1000) {
+        refBlockTime = start;
+        const info = await api.rpc.get_info();
+        refBlockInfo = await api.rpc.get_block(info.head_block_num - 3);
+        const timeInISOString = (new Date(start + 40*1000)).toISOString();      //expiration in 40 seconds
+        trxExpiration = timeInISOString.substr(0, timeInISOString.length - 1);
+    }
+
     return trx_id;
 }
 
