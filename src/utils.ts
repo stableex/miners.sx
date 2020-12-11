@@ -28,15 +28,24 @@ export async function transact(api: Api, actions: Action[]): Promise<string> {
 
     try {
 
+        // refresh TAPOS params every 20 seconds
+        if( start - refBlockTime > 20*1000) {
+            refBlockTime = start;
+            const info = await api.rpc.get_info();
+            refBlockInfo = await api.rpc.get_block(info.head_block_num - 3);
+            const timeInISOString = (new Date(refBlockTime + 40*1000)).toISOString();      //expiration in 40 seconds
+            trxExpiration = timeInISOString.substr(0, timeInISOString.length - 1);
+        }
+
         //first transact has to be made with blocksBehind
-        const result = refBlockTime == 0 ?
-            await api.transact({actions}, { blocksBehind: 3, expireSeconds: 30 }) :
+        const result = refBlockInfo ?
             await api.transact({
                 expiration: trxExpiration,
                 ref_block_num: refBlockInfo.block_num & 0xffff,
                 ref_block_prefix: refBlockInfo.ref_block_prefix,
                 actions: actions
-            });
+            }) :
+            await api.transact({actions}, { blocksBehind: 3, expireSeconds: 30 });
 
         trx_id = result.transaction_id;
         const end = new Date().getTime();
@@ -58,15 +67,6 @@ export async function transact(api: Api, actions: Action[]): Promise<string> {
         } else {
             console.error(e);
         }
-    }
-
-    // refresh TAPOS params every 20 seconds
-    if( start - refBlockTime > 20*1000) {
-        refBlockTime = start;
-        const info = await api.rpc.get_info();
-        refBlockInfo = await api.rpc.get_block(info.head_block_num - 3);
-        const timeInISOString = (new Date(start + 40*1000)).toISOString();      //expiration in 40 seconds
-        trxExpiration = timeInISOString.substr(0, timeInISOString.length - 1);
     }
 
     return trx_id;
