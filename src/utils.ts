@@ -4,6 +4,10 @@ import { Action } from "eosjs/dist/eosjs-serialize";
 let init = new Date().getTime();
 let count = 0;
 
+let refBlockTime = 0;
+let trxExpiration = "";
+let refBlockInfo : any;
+
 /**
  * Transaction
  */
@@ -23,7 +27,23 @@ export async function transact(api: Api, actions: Action[]): Promise<string> {
     }
 
     try {
-        const result = await api.transact({actions}, { blocksBehind: 3, expireSeconds: 30 });
+
+        // regenerate TAPOS params every 20 seconds
+        if( start - refBlockTime > 20*1000) {
+            refBlockTime = start;
+            const info = await api.rpc.get_info();
+            refBlockInfo = await api.rpc.get_block(info.head_block_num - 3);
+            const timeInISOString = (new Date(start + 40*1000)).toISOString();      //expiration in 40 seconds
+            trxExpiration = timeInISOString.substr(0, timeInISOString.length - 1);
+        }
+
+        const result = await api.transact({
+            expiration: trxExpiration,
+            ref_block_num: refBlockInfo.block_num & 0xffff,
+            ref_block_prefix: refBlockInfo.ref_block_prefix,
+            actions: actions
+        });
+
         trx_id = result.transaction_id;
         const end = new Date().getTime();
         const ms = (end - start) + "ms";
