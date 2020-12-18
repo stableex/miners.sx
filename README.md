@@ -1,6 +1,24 @@
 # SX - Server
 
+> SX Server faciliates pushing high speed transactions to the SX Network.
+
+## Requirements
+
+- [NodeJS](https://nodejs.org/en/download/) (LTS or Current)
+- [PM2](https://pm2.keymetrics.io/)
+- [Git](https://git-scm.com/downloads)
+
+## Install
+
+```bash
+$ git clone https://github.com/stableex/sx.server.git
+$ cd sx.server
+$ npm install
+```
+
 ## `.env` settings
+
+Copy-paste the following example to `.env` file in the `sx.server` folder and replace `<ACCOUNT>` & `<PRIVATE KEY>` with your own credentials.
 
 ```bash
 # REQUIRED
@@ -13,19 +31,23 @@ CONCURRENCY=5
 TIMEOUT_MS=10
 
 # Up to 32 API endpoints separated by comma
-NODEOS_ENDPOINTS="https://api.eosn.io,https://bp.whaleex.com,https://api.eosflare.io"
-```
-
-## Install
-
-```
-$ pm2 install typescript
-$ npm install
+NODEOS_ENDPOINTS="https://api.eosfinex.com,https://bp.whaleex.com,https://api.eosflare.io,https://mainnet-api.meet.one,https://api.main.alohaeos.com,https://api.eossweden.org"
 ```
 
 ## Quickstart
 
 ```
+$ npm start
+```
+
+## Advanced - PM2 server
+
+PM2 is a daemon process manager that will help you manage and keep your application online 24/7
+
+```bash
+# install typescript
+$ pm2 install typescript
+
 # start server
 $ pm2 start
 
