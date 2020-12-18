@@ -21,14 +21,13 @@ async function task(queue: PQueue<any, any>, worker: number ) {
     queue.add(() => task(queue, worker));
 }
 
-
-apis.forEach((api, j) => {
+for ( let worker = 0; worker < apis.length; worker++ ) {
     (async () => {
         const queue = new PQueue({concurrency: CONCURRENCY});
         for ( let i = 0; i < CONCURRENCY; i++ ) {
-            queue.add(() => task(queue, j));
+            queue.add(() => task(queue, worker));
             await timeout(TIMEOUT_MS);
         }
         await queue.onIdle();
     })();
-});
+}

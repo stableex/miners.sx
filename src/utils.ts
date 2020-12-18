@@ -66,7 +66,7 @@ export async function transact(api: Api, actions: Action[], worker: number): Pro
             fails[worker]++;
 
             for (const action of actions) {
-                console.error(`[#${worker} ${fails[worker]}/${success[worker]}] ${ms} [${count_b}/b] ${action.name} [${JSON.stringify(action.data)}] => ${message}`);
+                console.error(`[${worker}-${fails[worker]}/${success[worker]}] ${ms} [${count_b}/b] ${action.name} [${JSON.stringify(action.data)}] => ${message}`);
             }
         } else {
             console.error(e);
