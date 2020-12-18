@@ -22,6 +22,6 @@ export const AUTHORIZATION = ACTOR == CPU_ACTOR ? [{actor: ACTOR, permission: PE
 // EOSIO RPC & API
 const signatureProvider = new JsSignatureProvider(process.env.PRIVATE_KEYS.split(","));
 export const apis = NODEOS_ENDPOINTS.split(",").map(endpoint => {
-    const rpc = new JsonRpc(endpoint, { fetch: require('node-fetch') });
+    const rpc = new JsonRpc(endpoint, { fetch });
     return new Api({ rpc, signatureProvider, textDecoder: new TextDecoder(), textEncoder: new TextEncoder() });
 });
