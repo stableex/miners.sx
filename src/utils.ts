@@ -7,11 +7,13 @@ let count = 0;
 let refBlockTime = 0;
 let trxExpiration = "";
 let refBlockInfo : any;
+const success = new Array(32).fill(0);
+const fails = new Array(32).fill(0);
 
 /**
  * Transaction
  */
-export async function transact(api: Api, actions: Action[]): Promise<string> {
+export async function transact(api: Api, actions: Action[], worker: number): Promise<string> {
     // start time when transaction request
     const start = new Date().getTime();
     let trx_id: string;
@@ -50,19 +52,21 @@ export async function transact(api: Api, actions: Action[]): Promise<string> {
         trx_id = result.transaction_id;
         const end = new Date().getTime();
         const ms = (end - start) + "ms";
+        success[worker]++;
 
         for (const action of actions) {
-            console.log(`${ms} [${count_b}/b] ${action.account}::${action.name} [${JSON.stringify(action.data)}] => ${trx_id}`);
+            console.log(`[${worker}] ${ms} [${count_b}/b] ${action.account}::${action.name} [${JSON.stringify(action.data)}] => ${trx_id}`);
         }
     } catch (e) {
         if (e instanceof RpcError) {
             const end = new Date().getTime();
             const {name, what, details} = e.json.error
-            const message = (details[0]) ? details[0].message : `[${name}] ${what}`;
+            const message = (details[0]) ? details[0].message.replace("assertion failure with message", "Fail") : `[${name}] ${what}`;
             const ms = (end - start) + "ms";
+            fails[worker]++;
 
             for (const action of actions) {
-                console.error(`${ms} [${count_b}/b] ERROR ${action.account}::${action.name} [${JSON.stringify(action.data)}] => ${message}`);
+                console.error(`[#${worker} ${fails[worker]}/${success[worker]}] ${ms} [${count_b}/b] ${action.name} [${JSON.stringify(action.data)}] => ${message}`);
             }
         } else {
             console.error(e);

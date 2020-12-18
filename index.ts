@@ -1,4 +1,4 @@
-import { api, TIMEOUT_MS, ACTOR, ACCOUNT, CONCURRENCY, AUTHORIZATION } from "./src/config"
+import { apis, TIMEOUT_MS, ACTOR, ACCOUNT, CONCURRENCY, AUTHORIZATION } from "./src/config"
 import { timeout, transact } from "./src/utils"
 import { Action } from "eosjs/dist/eosjs-serialize";
 import PQueue from 'p-queue';
@@ -15,17 +15,20 @@ function mine( ): Action {
     };
 };
 
-async function task(queue: PQueue<any, any> ) {
-    await transact(api, [ mine() ]);
+async function task(queue: PQueue<any, any>, worker: number ) {
+    await transact(apis[worker], [ mine() ], worker);
     await timeout(TIMEOUT_MS);
-    queue.add(() => task(queue));
+    queue.add(() => task(queue, worker));
 }
 
-(async () => {
-    const queue = new PQueue({concurrency: CONCURRENCY});
-    for ( let i = 0; i <= CONCURRENCY; i++ ) {
-        queue.add(() => task(queue));
-        await timeout(TIMEOUT_MS);
-    }
-    await queue.onIdle();
-})();
+
+apis.forEach((api, j) => {
+    (async () => {
+        const queue = new PQueue({concurrency: CONCURRENCY});
+        for ( let i = 0; i < CONCURRENCY; i++ ) {
+            queue.add(() => task(queue, j));
+            await timeout(TIMEOUT_MS);
+        }
+        await queue.onIdle();
+    })();
+});

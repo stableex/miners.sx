@@ -10,16 +10,18 @@ if (!process.env.PRIVATE_KEYS) throw new Error("process.env.PRIVATE_KEYS is requ
 export const ACTOR = process.env.ACTOR;
 
 // OPTIONAL configurations
-export const NODEOS_ENDPOINT = process.env.NODEOS_ENDPOINT || "http://localhost:8888"
+export const NODEOS_ENDPOINTS = process.env.NODEOS_ENDPOINTS || "http://localhost:8888"
 export const PERMISSION = process.env.PERMISSION || "active";
 export const CPU_PERMISSION = process.env.CPU_PERMISSION || PERMISSION;
 export const CPU_ACTOR = process.env.CPU_ACTOR || ACTOR;
-export const CONCURRENCY = Number(process.env.CONCURRENCY || 8);
-export const TIMEOUT_MS = Number(process.env.TIMEOUT_MS || 1);
+export const CONCURRENCY = Number(process.env.CONCURRENCY || 5);
+export const TIMEOUT_MS = Number(process.env.TIMEOUT_MS || 10);
 export const ACCOUNT = process.env.ACCOUNT || "push.sx";
 export const AUTHORIZATION = ACTOR == CPU_ACTOR ? [{actor: ACTOR, permission: PERMISSION}] : [{actor: CPU_ACTOR, permission: CPU_PERMISSION}, {actor: ACTOR, permission: PERMISSION}];
 
 // EOSIO RPC & API
 const signatureProvider = new JsSignatureProvider(process.env.PRIVATE_KEYS.split(","));
-export const rpc = new JsonRpc(NODEOS_ENDPOINT, { fetch });
-export const api = new Api({ rpc, signatureProvider, textDecoder: new TextDecoder(), textEncoder: new TextEncoder() });
+export const apis = NODEOS_ENDPOINTS.split(" ").map(endpoint => {
+    const rpc = new JsonRpc(endpoint, { fetch: require('node-fetch') });
+    return new Api({ rpc, signatureProvider, textDecoder: new TextDecoder(), textEncoder: new TextEncoder() });
+});
