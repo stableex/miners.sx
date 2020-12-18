@@ -12,8 +12,8 @@ CPU_ACTOR="<ACCOUNT>"
 CONCURRENCY=5
 TIMEOUT_MS=10
 
-# Up to 32 API endpoints separated by space
-NODEOS_ENDPOINTS="https://api.eosn.io https://bp.whaleex.com https://api.eosflare.io"
+# Up to 32 API endpoints separated by comma
+NODEOS_ENDPOINTS="https://api.eosn.io,https://bp.whaleex.com,https://api.eosflare.io"
 ```
 
 ## Install
