@@ -19,6 +19,11 @@ export const TIMEOUT_MS = Number(process.env.TIMEOUT_MS || 10);
 export const ACCOUNT = process.env.ACCOUNT || "push.sx";
 export const AUTHORIZATION = ACTOR == CPU_ACTOR ? [{actor: ACTOR, permission: PERMISSION}] : [{actor: CPU_ACTOR, permission: CPU_PERMISSION}, {actor: ACTOR, permission: PERMISSION}];
 
+// validate .env settings
+if (process.env.CPU_ACTOR.match(/[<>]/)) throw new Error("process.env.CPU_ACTOR is invalid");
+if (process.env.ACTOR.match(/[<>]/)) throw new Error("process.env.ACTOR is invalid");
+if (process.env.PRIVATE_KEYS.match(/[<>]/)) throw new Error("process.env.PRIVATE_KEYS is invalid");
+
 // EOSIO RPC & API
 const signatureProvider = new JsSignatureProvider(process.env.PRIVATE_KEYS.split(","));
 export const apis = NODEOS_ENDPOINTS.split(",").map(endpoint => {
