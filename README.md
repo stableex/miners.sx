@@ -18,7 +18,7 @@ $ npm install
 
 ## `.env` settings
 
-Copy-paste the following example to `.env` file in the `sx.server` folder and replace `<ACCOUNT>` & `<PRIVATE KEY>` with your own credentials.
+Copy-paste the following environment settings as `.env` file in the root folder (ex: `sx.server/.env`) and replace `<ACCOUNT>` & `<PRIVATE KEY>` with your own credentials.
 
 ```bash
 # REQUIRED
