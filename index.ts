@@ -52,7 +52,7 @@ async function validate () {
 }
 
 async function boot() {
-    // await validate();
+    await validate();
 
     // initiate workers
     for ( let worker = 0; worker < apis.length; worker++ ) {
