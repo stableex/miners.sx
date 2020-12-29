@@ -31,7 +31,7 @@ export async function transact(api: Api, actions: Action[], worker: number): Pro
     try {
 
         // refresh TAPOS params every 20 seconds
-        if( start - refBlockTime > 20*1000) {
+        if ( start - refBlockTime > 20*1000) {
             refBlockTime = start;
             const info = await api.rpc.get_info();
             refBlockInfo = await api.rpc.get_block(info.head_block_num - 3);
@@ -69,7 +69,8 @@ export async function transact(api: Api, actions: Action[], worker: number): Pro
                 console.error(`[${worker}-${fails[worker]}/${success[worker]}] ${ms} [${count_b}/b] ${action.name} [${JSON.stringify(action.data)}] => ${message}`);
             }
         } else {
-            console.error(e);
+            console.error( "❌ ERROR with RPC endpoint:", api.rpc.endpoint, JSON.stringify(e) );
+            await timeout(5000);
         }
     }
 
