@@ -33,9 +33,11 @@ async function start( worker: number ) {
 async function validate () {
     // check RPC connections
     const valid_connections = new Map<string, true>();
+    let tries = 3;
     while ( valid_connections.size < apis.length ) {
-        for ( const api of apis ) {
-            const rpc = api.rpc;
+        tries--;
+        for ( let i = apis.length-1; i >=0; i-- ) {
+            const rpc = apis[i].rpc;
             // skip if valide
             if ( valid_connections.has( rpc.endpoint )) continue;
             try {
@@ -44,8 +46,14 @@ async function validate () {
                 valid_connections.set(rpc.endpoint, true);
                 console.error( "✅ OK endpoint:", rpc.endpoint );
             } catch (e) {
-                console.error( "❌ ERROR with RPC endpoint:", rpc.endpoint );
-                await timeout(5000);
+                if(tries) {
+                    console.error( "❌ ERROR with RPC endpoint:", rpc.endpoint );
+                    await timeout(5000);
+                }
+                else {
+                    apis.splice(i, 1);
+                    console.error( "🛑 RPC endpoint removed:", rpc.endpoint );
+                }
             }
         }
     }
@@ -56,7 +64,7 @@ async function boot() {
 
     // initiate workers
     for ( let worker = 0; worker < apis.length; worker++ ) {
-        console.error( "🤖 inititate woker", worker );
+        console.error( "🤖 inititate worker", worker );
         start( worker );
     }
 }
