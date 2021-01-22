@@ -3,6 +3,7 @@ import { Action } from "eosjs/dist/eosjs-serialize";
 import { apis } from "./config"
 
 let init = new Date().getTime();
+let lastSuccess = 0;
 let count = 0;
 
 let refBlockTime = 0;
@@ -54,6 +55,7 @@ export async function transact(api: Api, actions: Action[], worker: number): Pro
         const ms = (end - start) + "ms";
         status[worker].success++;
         status[worker].lastValid = new Date();
+        lastSuccess = new Date().getTime();
 
         for (const action of actions) {
             console.log(`[${worker}] ${ms} [${count_b}/b] ${action.account}::${action.name} [${JSON.stringify(action.data)}] => ${trx_id}`);
@@ -66,9 +68,10 @@ export async function transact(api: Api, actions: Action[], worker: number): Pro
             const ms = (end - start) + "ms";
             status[worker].fails++;
             status[worker].lastValid = new Date();
+            const since = lastSuccess==0 ? "--s" : timeSince(new Date().getTime() - lastSuccess);
 
             for (const action of actions) {
-                console.error(`[${worker}-${status[worker].fails}/${status[worker].success}/${status[worker].errors}] ${ms} [${count_b}/b] ${action.name} [${JSON.stringify(action.data)}] => ${message}`);
+                console.error(`[${worker}-${status[worker].fails}/${status[worker].success}/${status[worker].errors}/${since}] ${ms} [${count_b}/b] ${action.name} [${JSON.stringify(action.data)}] => ${message}`);
             }
         } else {
             const msSinceValid = new Date().getTime() - status[worker].lastValid.getTime();
@@ -84,3 +87,17 @@ export async function transact(api: Api, actions: Action[], worker: number): Pro
 export function timeout( ms: number ): Promise<void> {
     return new Promise((resolve) => setTimeout(() => resolve(), ms ))
 }
+
+function timeSince(ms: number): string {
+
+    let seconds = Math.floor(ms / 1000);
+    let str = "";
+    if (Math.floor(seconds / 3600)) {
+      str = Math.floor(seconds / 3600) + "h";
+    }
+    if (Math.floor(seconds / 60)) {
+      str = str + Math.floor(seconds / 60) % 60 + "m";
+    }
+    str = str + Math.floor(seconds % 60) + "s";
+    return str;
+  }
