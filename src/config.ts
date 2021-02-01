@@ -11,17 +11,15 @@ export const ACTOR = process.env.ACTOR;
 
 // OPTIONAL configurations
 export const NODEOS_ENDPOINTS = process.env.NODEOS_ENDPOINTS || "http://localhost:8888"
-export const PERMISSION = process.env.PERMISSION || "active";
-export const CPU_PERMISSION = process.env.CPU_PERMISSION || PERMISSION;
 export const CPU_ACTOR = process.env.CPU_ACTOR || ACTOR;
 export const CONCURRENCY = Number(process.env.CONCURRENCY || 5);
 export const TIMEOUT_MS = Number(process.env.TIMEOUT_MS || 10);
 export const ACCOUNT = process.env.ACCOUNT || "push.sx";
-export const AUTHORIZATION = ACTOR == CPU_ACTOR ? [{actor: ACTOR, permission: PERMISSION}] : [{actor: CPU_ACTOR, permission: CPU_PERMISSION}, {actor: ACTOR, permission: PERMISSION}];
+export const AUTHORIZATION = parse_authorization([ CPU_ACTOR, ACTOR ]);
 
 // validate .env settings
-if (process.env.CPU_ACTOR.match(/[<>]/)) throw new Error("process.env.CPU_ACTOR is invalid");
-if (process.env.ACTOR.match(/[<>]/)) throw new Error("process.env.ACTOR is invalid");
+if (CPU_ACTOR.match(/[<>]/)) throw new Error("process.env.CPU_ACTOR is invalid");
+if (ACTOR.match(/[<>]/)) throw new Error("process.env.ACTOR is invalid");
 if (process.env.PRIVATE_KEYS.match(/[<>]/)) throw new Error("process.env.PRIVATE_KEYS is invalid");
 
 // EOSIO RPC & API
@@ -30,3 +28,16 @@ export const apis = NODEOS_ENDPOINTS.split(",").map(endpoint => {
     const rpc = new JsonRpc(endpoint, { fetch });
     return new Api({ rpc, signatureProvider, textDecoder: new TextDecoder(), textEncoder: new TextEncoder() });
 });
+
+function parse_authorization( authorizations: string[] ) {
+    const exists = new Set<string>();
+    const permissions = [];
+    for ( const authorization of authorizations ) {
+        if (!authorization) continue;
+        const [actor, permission ] = authorization.split("@");
+        if (exists.has( actor )) continue; // prevent duplicates
+        permissions.push({ actor, permission: permission || "active" });
+        exists.add( actor );
+    }
+    return permissions;
+}

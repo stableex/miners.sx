@@ -21,13 +21,52 @@ async function task(queue: PQueue<any, any>, worker: number ) {
     queue.add(() => task(queue, worker));
 }
 
-for ( let worker = 0; worker < apis.length; worker++ ) {
-    (async () => {
-        const queue = new PQueue({concurrency: CONCURRENCY});
-        for ( let i = 0; i < CONCURRENCY; i++ ) {
-            queue.add(() => task(queue, worker));
-            await timeout(TIMEOUT_MS);
+async function start( worker: number ) {
+    const queue = new PQueue({concurrency: CONCURRENCY});
+    for ( let i = 0; i < CONCURRENCY; i++ ) {
+        queue.add(() => task(queue, worker));
+        await timeout(TIMEOUT_MS);
+    }
+    await queue.onIdle();
+};
+
+async function validate () {
+    // check RPC connections
+    const valid_connections = new Map<string, true>();
+    let tries = 3;
+    while ( valid_connections.size < apis.length ) {
+        tries--;
+        for ( let i = apis.length-1; i >=0; i-- ) {
+            const rpc = apis[i].rpc;
+            // skip if valide
+            if ( valid_connections.has( rpc.endpoint )) continue;
+            try {
+                // RPC endpoint must be able to respond
+                await rpc.get_info();
+                valid_connections.set(rpc.endpoint, true);
+                console.error( "✅ OK endpoint:", rpc.endpoint );
+            } catch (e) {
+                if(tries) {
+                    console.error( "❌ ERROR with RPC endpoint:", rpc.endpoint );
+                    await timeout(5000);
+                }
+                else {
+                    apis.splice(i, 1);
+                    console.error( "🛑 RPC endpoint removed:", rpc.endpoint );
+                }
+            }
         }
-        await queue.onIdle();
-    })();
+    }
 }
+
+async function boot() {
+    await validate();
+
+    // initiate workers
+    for ( let worker = 0; worker < apis.length; worker++ ) {
+        console.error( "🤖 inititate worker", worker );
+        start( worker );
+    }
+}
+
+boot();
