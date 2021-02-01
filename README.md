@@ -31,7 +31,7 @@ CONCURRENCY=5
 TIMEOUT_MS=10
 
 # Up to 32 API endpoints separated by comma
-NODEOS_ENDPOINTS="https://api.eosfinex.com,https://bp.whaleex.com,https://api.eosflare.io,https://mainnet-api.meet.one,https://api.main.alohaeos.com,https://api.eossweden.org"
+NODEOS_ENDPOINTS="https://api.eosfinex.com,https://api.eosflare.io,https://api.main.alohaeos.com,https://api.eossweden.org"
 ```
 
 ## Quickstart
