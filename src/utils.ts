@@ -1,6 +1,6 @@
 import { RpcError, Api } from "eosjs";
 import { Action } from "eosjs/dist/eosjs-serialize";
-import { apis } from "./config"
+import { apis, VERBOSE } from "./config"
 
 let init = new Date().getTime();
 let lastSuccess = 0;
@@ -55,23 +55,25 @@ export async function transact(api: Api, actions: Action[], worker: number): Pro
         const ms = (end - start) + "ms";
         status[worker].success++;
         status[worker].lastValid = new Date();
+        const since = lastSuccess==0 ? "--s" : timeSince(new Date().getTime() - lastSuccess);
         lastSuccess = new Date().getTime();
 
         for (const action of actions) {
-            console.log(`[${worker}] ${ms} [${count_b}/b] ${action.account}::${action.name} [${JSON.stringify(action.data)}] => ${trx_id}`);
+            console.log(`[${worker}-${status[worker].fails}/${status[worker].success}/${status[worker].errors}/${since}] ${ms} [${count_b}/b] ${action.name} [${JSON.stringify(action.data)}] => ${trx_id}`);
         }
     } catch (e) {
         if (e instanceof RpcError) {
-            const end = new Date().getTime();
-            const {name, what, details} = e.json.error
-            const message = (details[0]) ? details[0].message.replace("assertion failure with message", "Fail") : `[${name}] ${what}`;
-            const ms = (end - start) + "ms";
             status[worker].fails++;
             status[worker].lastValid = new Date();
-            const since = lastSuccess==0 ? "--s" : timeSince(new Date().getTime() - lastSuccess);
-
-            for (const action of actions) {
-                console.error(`[${worker}-${status[worker].fails}/${status[worker].success}/${status[worker].errors}/${since}] ${ms} [${count_b}/b] ${action.name} [${JSON.stringify(action.data)}] => ${message}`);
+            if(VERBOSE) {
+                const end = new Date().getTime();
+                const {name, what, details} = e.json.error
+                const message = (details[0]) ? details[0].message.replace("assertion failure with message", "Fail") : `[${name}] ${what}`;
+                const ms = (end - start) + "ms";
+                const since = lastSuccess==0 ? "--s" : timeSince(new Date().getTime() - lastSuccess);
+                for (const action of actions) {
+                    console.error(`[${worker}-${status[worker].fails}/${status[worker].success}/${status[worker].errors}/${since}] ${ms} [${count_b}/b] ${action.name} [${JSON.stringify(action.data)}] => ${message}`);
+                }
             }
         } else {
             const msSinceValid = new Date().getTime() - status[worker].lastValid.getTime();

@@ -16,6 +16,7 @@ export const CONCURRENCY = Number(process.env.CONCURRENCY || 5);
 export const TIMEOUT_MS = Number(process.env.TIMEOUT_MS || 10);
 export const ACCOUNT = process.env.ACCOUNT || "push.sx";
 export const AUTHORIZATION = parse_authorization([ CPU_ACTOR, ACTOR ]);
+export const VERBOSE = process.env.VERBOSE && (process.env.VERBOSE.toLowerCase() == "true" || process.env.VERBOSE.toLowerCase() == "yes") || false;
 
 // validate .env settings
 if (CPU_ACTOR.match(/[<>]/)) throw new Error("process.env.CPU_ACTOR is invalid");
