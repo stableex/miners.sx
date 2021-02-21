@@ -1,1 +1,1 @@
-pm2 start --interpreter none ts-node ./index.ts
+pm2 start --interpreter none 'ts-node ./index.ts'

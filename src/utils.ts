@@ -67,8 +67,7 @@ export async function transact(api: Api, actions: Action[], worker: number): Pro
             status[worker].lastValid = new Date();
             const end = new Date().getTime();
             const {name, what, details} = e.json.error
-            const report = VERBOSE || (details[0] && details[0].message.indexOf(": [") == -1);
-            if(report) {        //log when verbose flag is set or it's a non-standard check fail
+            if(VERBOSE || !isNormalFail(details[0].message)) {        //log when verbose flag is set or it's a non-standard check fail
                 const message = (details[0]) ? details[0].message.replace("assertion failure with message", "Fail") : `[${name}] ${what}`;
                 const ms = (end - start) + "ms";
                 const since = lastSuccess==0 ? "--s" : timeSince(new Date().getTime() - lastSuccess);
@@ -104,3 +103,11 @@ function timeSince(ms: number): string {
     str = str + Math.floor(seconds % 60) + "s";
     return str;
   }
+
+function isNormalFail(message: string): boolean {
+    if(message.indexOf(": [") != -1) return true;
+    if(message.indexOf("Profits under") != -1) return true;
+    if(message.indexOf("deadline exceeded") != -1) return true;
+
+    return false;
+}
