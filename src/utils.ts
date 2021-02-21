@@ -65,9 +65,10 @@ export async function transact(api: Api, actions: Action[], worker: number): Pro
         if (e instanceof RpcError) {
             status[worker].fails++;
             status[worker].lastValid = new Date();
-            if(VERBOSE) {
-                const end = new Date().getTime();
-                const {name, what, details} = e.json.error
+            const end = new Date().getTime();
+            const {name, what, details} = e.json.error
+            const report = VERBOSE || (details[0] && details[0].message.indexOf(": [") == -1);
+            if(report) {        //log when verbose flag is set or it's a non-standard check fail
                 const message = (details[0]) ? details[0].message.replace("assertion failure with message", "Fail") : `[${name}] ${what}`;
                 const ms = (end - start) + "ms";
                 const since = lastSuccess==0 ? "--s" : timeSince(new Date().getTime() - lastSuccess);
