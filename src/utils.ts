@@ -108,6 +108,7 @@ function isNormalFail(message: string): boolean {
     if(message.indexOf(": [") != -1) return true;
     if(message.indexOf("Profits under") != -1) return true;
     if(message.indexOf("deadline exceeded") != -1) return true;
+    if(message.indexOf(" not ready yet") != -1) return true;
 
     return false;
 }
