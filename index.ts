@@ -46,7 +46,7 @@ async function validate () {
                 valid_connections.set(rpc.endpoint, true);
                 console.error( "✅ OK endpoint:", rpc.endpoint );
             } catch (e) {
-                if(tries) {
+                if(tries || rpc.endpoint.indexOf("localhost") != -1) {
                     console.error( "❌ ERROR with RPC endpoint:", rpc.endpoint );
                     await timeout(5000);
                 }
