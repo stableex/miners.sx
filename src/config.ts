@@ -51,5 +51,6 @@ export const LOG_NORMAL_FAILS = [
     'already claimed rewards',
     'no unpacking available',
     'distribute: not ready yet',
-    'deadline exceeded'
+    'deadline exceeded',
+    'handle_next_push: not ready yet'
 ]
