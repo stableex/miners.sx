@@ -1,6 +1,6 @@
 import { RpcError, Api } from "eosjs";
 import { Action } from "eosjs/dist/eosjs-serialize";
-import { apis, VERBOSE } from "./config"
+import { apis, VERBOSE, LOG_NORMAL_FAILS } from "./config"
 
 let init = new Date().getTime();
 let lastSuccess = 0;
@@ -77,7 +77,7 @@ export async function transact(api: Api, actions: Action[], worker: number): Pro
             }
         } else {
             const msSinceValid = new Date().getTime() - status[worker].lastValid.getTime();
-            console.error( `[${worker}-${status[worker].fails}/${status[worker].success}/${status[worker].errors}] ❌ ERROR with RPC endpoint: ${api.rpc.endpoint}. Sleeping ${(5000 + msSinceValid)/1000} seconds` );
+            console.error( `[${worker}-${status[worker].fails}/${status[worker].success}/${status[worker].errors}] ❌ ERROR with RPC endpoint: ${api.rpc.endpoint}. Sleeping ${(5000 + msSinceValid)/1000} seconds: ${e}` );
             status[worker].errors++;
             await timeout(5000 + msSinceValid);  //sleep 5 seconds, 10 seconds, 15 seconds, 20 seconds, etc
         }
@@ -105,11 +105,8 @@ function timeSince(ms: number): string {
   }
 
 function isNormalFail(message: string): boolean {
-    if(message.indexOf(": [") != -1) return true;
-    if(message.indexOf("Profits under") != -1) return true;
-    if(message.indexOf("deadline exceeded") != -1) return true;
-    if(message.indexOf(" not ready yet") != -1) return true;
-    if(message.indexOf("hft.sx: best profit") != -1) return true;
-
+    for(let msg of LOG_NORMAL_FAILS) {
+        if(message.indexOf(msg) != -1) return true;
+    }
     return false;
 }

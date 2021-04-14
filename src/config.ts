@@ -42,3 +42,11 @@ function parse_authorization( authorizations: string[] ) {
     }
     return permissions;
 }
+
+export const LOG_NORMAL_FAILS = [
+    'Profits under',
+    'hft.sx: best profit',
+    'Swap amount too small',
+    'already claimed rewards',
+    'no unpacking available'
+]
