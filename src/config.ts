@@ -49,5 +49,7 @@ export const LOG_NORMAL_FAILS = [
     'hft.sx: best profit',
     'Swap amount too small',
     'already claimed rewards',
-    'no unpacking available'
+    'no unpacking available',
+    'distribute: not ready yet',
+    'deadline exceeded'
 ]
