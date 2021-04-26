@@ -22,13 +22,14 @@ Copy-paste the following environment settings as `.env` file in the root folder 
 
 ```bash
 # REQUIRED
-PRIVATE_KEYS="<PRIVATE KEY>"
+PRIVATE_KEYS="<PRIVATE KEY ACTOR>,<PRIVATE KEY CPU>"
 ACTOR="<ACCOUNT>@<PERMISSION>"
 
 # OPTIONAL
 CPU_ACTOR="<ACCOUNT>@<PERMISSION>"
 CONCURRENCY=5
 TIMEOUT_MS=10
+VERBOSE=false
 
 # Up to 32 API endpoints separated by comma
 NODEOS_ENDPOINTS="https://api.eosfinex.com,https://api.eosflare.io,https://api.main.alohaeos.com,https://api.eossweden.org"
