@@ -1,4 +1,4 @@
-import { apis, TIMEOUT_MS, ACTOR, ACCOUNT, CONCURRENCY, AUTHORIZATION } from "./src/config"
+import { apis, TIMEOUT_MS, ACTOR, ACCOUNT, CONCURRENCY, AUTHORIZATION, CPU_ACTOR } from "./src/config"
 import { timeout, transact } from "./src/utils"
 import { Action } from "eosjs/dist/eosjs-serialize";
 import PQueue from 'p-queue';
@@ -46,7 +46,7 @@ async function validate () {
                 valid_connections.set(rpc.endpoint, true);
                 console.error( "✅ OK endpoint:", rpc.endpoint );
             } catch (e) {
-                if(tries || rpc.endpoint.indexOf("localhost") != -1) {
+                if (tries || rpc.endpoint.indexOf("localhost") != -1) {
                     console.error( "❌ ERROR with RPC endpoint:", rpc.endpoint );
                     await timeout(5000);
                 }
@@ -56,6 +56,20 @@ async function validate () {
                 }
             }
         }
+    }
+    // validate EOS accounts
+    is_account_valid(ACTOR);
+    is_account_valid(CPU_ACTOR);
+}
+
+async function is_account_valid( account: string ) {
+    try {
+        await apis[0].rpc.get_account(account);
+    } catch (e) {
+        for ( const details of e.json.error.details ) {
+            console.error("🛑 " + details.message);
+        }
+        throw new Error("🛑 Invalid EOS account: " + account)
     }
 }
 
