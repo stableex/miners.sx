@@ -66,8 +66,9 @@ export async function transact(api: Api, actions: Action[], worker: number): Pro
             status[worker].fails++;
             status[worker].lastValid = new Date();
             const end = new Date().getTime();
+            if ( !e.json || !e.json.error ) return;
             const {name, what, details} = e.json.error
-            if(VERBOSE || !isNormalFail(details[0].message)) {        //log when verbose flag is set or it's a non-standard check fail
+            if (VERBOSE || !isNormalFail(details[0].message)) {        //log when verbose flag is set or it's a non-standard check fail
                 const message = (details[0]) ? details[0].message.replace("assertion failure with message", "Fail") : `[${name}] ${what}`;
                 const ms = (end - start) + "ms";
                 const since = lastSuccess==0 ? "--s" : timeSince(new Date().getTime() - lastSuccess);
