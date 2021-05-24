@@ -52,5 +52,6 @@ export const LOG_NORMAL_FAILS = [
     'no unpacking available',
     'distribute: not ready yet',
     'deadline exceeded',
-    'handle_next_push: not ready yet'
+    'handle_next_push: not ready yet',
+    'on_mine: insufficient balance'
 ]
