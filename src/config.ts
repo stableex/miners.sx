@@ -53,5 +53,6 @@ export const LOG_NORMAL_FAILS = [
     'distribute: not ready yet',
     'deadline exceeded',
     'handle_next_push: not ready yet',
-    'on_mine: insufficient balance'
+    'on_mine: insufficient balance',
+    'liq.sx healthy account',
 ]
