@@ -55,4 +55,6 @@ export const LOG_NORMAL_FAILS = [
     'handle_next_push: not ready yet',
     'on_mine: insufficient balance',
     'liq.sx healthy account',
+    'proxy::claimall: nothing to claim',
+    'proxy::updateall: nothing to update',
 ]
