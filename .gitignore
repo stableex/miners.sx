@@ -1,8 +1,8 @@
 *.abi
 *.wasm
 stderr
-.vscode
 nodeos
+out/
 
 # Logs
 logs

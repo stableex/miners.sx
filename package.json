@@ -8,7 +8,8 @@
   "author": "Denis Carriere",
   "license": "MIT",
   "scripts": {
-    "start": "ts-node index.ts"
+    "start": "ts-node index.ts",
+    "build": "tsc"
   },
   "devDependencies": {
     "@types/node": "*",
