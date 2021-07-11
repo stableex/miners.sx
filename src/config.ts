@@ -57,4 +57,6 @@ export const LOG_NORMAL_FAILS = [
     'liq.sx healthy account',
     'proxy::claimall: nothing to claim',
     'proxy::updateall: nothing to update',
+    'atomichub.sx::mine: nothing to buy',
+    'atomichub.sx::mine: nothing to sell',
 ]
