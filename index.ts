@@ -66,7 +66,7 @@ async function is_account_valid( account: string ) {
     try {
         await apis[0].rpc.get_account(account);
     } catch (e) {
-        for ( const details of e.json.error.details ) {
+        for ( const details of e.json?.error?.details ) {
             console.error("🛑 " + details.message);
         }
         throw new Error("🛑 Invalid EOS account: " + account)
